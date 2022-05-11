@@ -23,8 +23,13 @@ export default function Home() {
     if (!img) {
       return
     }
-    const [header, data] = img?.split(",")
-    return encodeURIComponent(data?.replaceAll("=", ""))
+    console.log(img)
+    const [_header, data] = img?.split(",")
+    return encodeURIComponent(data
+      ?.replaceAll("=", "")
+      .replaceAll("+", "-")
+      .replaceAll("/", "_")
+    )
   }, [img])
 
   return (
@@ -65,12 +70,9 @@ export default function Home() {
                 filter: "hamming"
               }
             )
-            const dataUrl = canvasRef.current.toDataURL("image/webp")
+            const dataUrl = canvasRef.current.toDataURL("image/webp", 0.2)
             setImg(dataUrl)
           }
-          // canvasRef.current.onchange = (e) => {
-          //   console.log("change")
-          // }
           imgC.src = URL.createObjectURL(file)
           reader.readAsDataURL(file)
         }} />
@@ -81,15 +83,6 @@ export default function Home() {
           {img && <a target="_blank" href={`/img/${img2}`}>
             preview
           </a>}
-          {/* {img && <a target="_blank" href={`/img/${encodeURIComponent(img2).slice(0, 5000000)}`}>
-            preview
-          </a>}
-          {img && <a target="_blank" href={`/img/${encodeURIComponent(img).slice(0, 10000)}`}>
-            preview2
-          </a>}
-          {img && <a target="_blank" href={`/img/${encodeURIComponent(img).slice(0, 100000)}`}>
-            preview2
-          </a>} */}
         </Stack>
         <canvas ref={canvasRef} >
 

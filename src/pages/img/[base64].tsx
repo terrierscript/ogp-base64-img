@@ -6,7 +6,11 @@ export const Page = () => {
   const route = useRouter()
   const base64 = useMemo(() => {
     const header = "data:image/webp;base64"
-    return `${header},${route.query.base64}`
+    const revert = route?.query?.base64?.toString()
+      .replaceAll("-", "+")
+      .replaceAll("_", "/")
+
+    return `${header},${revert}`
   }, [route])
   // console.log(r)
 
