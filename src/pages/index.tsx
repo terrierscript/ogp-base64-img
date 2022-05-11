@@ -1,14 +1,32 @@
 import { Box, Input, Link, Stack } from '@chakra-ui/react'
 import Head from 'next/head'
 import React, { useMemo, useRef, useState } from 'react'
+import pica from "pica"
 
+const Pica = pica()
+
+const aspectRatioSize = (max: [number, number], input: [number, number]): [number, number] => {
+  const [maxW, maxH] = max
+  const [w, h] = input
+  const ratio = h / w
+  if (ratio < 1) {
+    return [maxW, maxH * ratio]
+  } else {
+    return [maxW * ratio, maxH]
+
+  }
+}
 export default function Home() {
   const [img, setImg] = useState<string>()
   const canvasRef = useRef<HTMLCanvasElement>()
   const img2 = useMemo(() => {
-    return img?.split(",")[1]
+    if (!img) {
+      return
+    }
+    const [header, data] = img?.split(",")
+    return encodeURIComponent(data?.replaceAll("=", ""))
   }, [img])
-  console.log(img, img?.length)
+
   return (
     <Box>
       <Head>
@@ -30,14 +48,24 @@ export default function Home() {
             return
           }
           const imgC = new Image()
-          // canvasRef.current.width = imgC.width
-          // canvasRef.current.height = imgC.height
           const ctx = canvasRef.current.getContext('2d')
-          console.log(URL.createObjectURL(file))
-          imgC.onload = () => {
-            ctx.drawImage(imgC, 10, 10)
-            setImg(canvasRef.current.toDataURL())
+
+
+          imgC.onload = async () => {
+            // ctx.drawImage(imgC, 0, 0)
+            const [w, h] = aspectRatioSize(
+              [400, 400],
+              [imgC.width, imgC.height]
+            )
+            canvasRef.current.width = w
+            canvasRef.current.height = h
+            await Pica.resize(imgC, canvasRef.current)
+            const dataUrl = canvasRef.current.toDataURL("image/webp", 0)
+            setImg(dataUrl)
           }
+          // canvasRef.current.onchange = (e) => {
+          //   console.log("change")
+          // }
           imgC.src = URL.createObjectURL(file)
           reader.readAsDataURL(file)
         }} />
@@ -45,10 +73,10 @@ export default function Home() {
           <Box>
             LEN:{img2?.length}
           </Box>
-          {img && <a target="_blank" href={`/img/${encodeURIComponent(img2)}`}>
+          {img && <a target="_blank" href={`/img/${img2}`}>
             preview
           </a>}
-          {img && <a target="_blank" href={`/img/${encodeURIComponent(img2).slice(0, 5000000)}`}>
+          {/* {img && <a target="_blank" href={`/img/${encodeURIComponent(img2).slice(0, 5000000)}`}>
             preview
           </a>}
           {img && <a target="_blank" href={`/img/${encodeURIComponent(img).slice(0, 10000)}`}>
@@ -56,7 +84,7 @@ export default function Home() {
           </a>}
           {img && <a target="_blank" href={`/img/${encodeURIComponent(img).slice(0, 100000)}`}>
             preview2
-          </a>}
+          </a>} */}
         </Stack>
         <canvas ref={canvasRef} >
 
