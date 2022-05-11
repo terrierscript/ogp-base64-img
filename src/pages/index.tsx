@@ -54,13 +54,18 @@ export default function Home() {
           imgC.onload = async () => {
             // ctx.drawImage(imgC, 0, 0)
             const [w, h] = aspectRatioSize(
-              [400, 400],
+              [300, 300],
               [imgC.width, imgC.height]
             )
             canvasRef.current.width = w
             canvasRef.current.height = h
-            await Pica.resize(imgC, canvasRef.current)
-            const dataUrl = canvasRef.current.toDataURL("image/webp", 0)
+            await Pica.resize(imgC,
+              canvasRef.current,
+              {
+                filter: "hamming"
+              }
+            )
+            const dataUrl = canvasRef.current.toDataURL("image/webp")
             setImg(dataUrl)
           }
           // canvasRef.current.onchange = (e) => {
