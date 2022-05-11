@@ -18,6 +18,7 @@ export const Page = ({ data }) => {
   return <Box>
     <Head>
       <title>img</title>
+      <meta name="twitter:card" content="summary_large_image"></meta>
       <meta property="og:image" content={data} />
     </Head>
     <img src={data} />
