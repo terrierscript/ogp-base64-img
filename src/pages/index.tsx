@@ -2,7 +2,10 @@ import { Box, Input, Link, Stack } from '@chakra-ui/react'
 import Head from 'next/head'
 import React, { useMemo, useRef, useState } from 'react'
 import pica from "pica"
+import lz4 from "lz4"
+import Zip from "jszip"
 
+const zip = new Zip()
 const Pica = pica()
 
 const aspectRatioSize = (max: [number, number], input: [number, number]): [number, number] => {
@@ -70,6 +73,12 @@ export default function Home() {
                 filter: "hamming"
               }
             )
+            canvasRef.current.toBlob((bl) => {
+              console.log(bl)
+              // const r = lz4.encodeBound(bl)
+              // console.log(r)
+              // zip.file()
+            }, "image/webp", 0.2)
             const dataUrl = canvasRef.current.toDataURL("image/webp", 0.2)
             setImg(dataUrl)
           }
